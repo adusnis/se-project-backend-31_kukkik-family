@@ -12,6 +12,7 @@ exports.register = async (req, res, next) => {
         //create user
         const user = await User.create({
             ...req.body,
+            role : "user",
             likedCars: []
         });
         //const token=user.getSignedJwtToken(); 
