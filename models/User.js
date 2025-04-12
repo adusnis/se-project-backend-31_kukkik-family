@@ -41,6 +41,12 @@ const UserSchema=new mongoose.Schema({
     createAt:{
         type:Date,
         default:Date.now
+    },
+    coin: {
+        type: Number,
+        required: true,
+        min: [0, 'Coin must be a non-negative number'],
+        default: 0
     }
 
 });
