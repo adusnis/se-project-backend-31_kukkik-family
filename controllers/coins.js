@@ -3,9 +3,16 @@ const User = require('../models/User')
 
 exports.getCoins = async (req, res, next) => {
     try {
+        const user = await User.findById(req.user.id);
+
+        res.status(200).json({
+            success: true,
+            coin: user.coin
+        });
 
     } catch (err) {
         console.log(err);
+        
         res.status(500).json({
             success: false,
             message: "Cannot fetch coins",
@@ -16,6 +23,7 @@ exports.getCoins = async (req, res, next) => {
 
 exports.addCoins = async (req, res, next) => {
     try {
+
 
     } catch (err) {
         console.log(err);
