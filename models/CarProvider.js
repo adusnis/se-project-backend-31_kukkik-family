@@ -1,5 +1,4 @@
 const mongoose = require('mongoose');
-const status = require('statuses');
 
 const CarProviderSchema = new mongoose.Schema({
     name: {
