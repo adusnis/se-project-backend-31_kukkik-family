@@ -241,3 +241,76 @@ exports.likeCarProvider = async (req, res, next) => {
         });
     }
 };
+
+// @desc GET a car status
+// @route GET /api/carproviders/:id/status
+// @access Private
+exports.getCarStatus = async (req, res) => {
+    try {
+      const car = await CarProvider.findById(req.params.id).select('status');
+  
+      if (!car) {
+        return res.status(404).json({ success: false, message: 'Car not found' });
+      }
+  
+      res.status(200).json({
+        success: true,
+        status: car.status
+      });
+    } catch (err) {
+      res.status(500).json({ success: false, message: err.message });
+    }
+};
+
+// @desc UPDATE a car status
+// @route PUT /api/carproviders/:id/status
+// @access Private
+exports.updateCarStatus = async (req, res) => {
+    const { status } = req.body;
+  
+    const allowedStatuses = ['available', 'rented', 'received', 'returned'];
+
+    if (!allowedStatuses.includes(status)) {
+      return res.status(400).json({
+        success: false,
+        message: `Invalid status. Allowed values: ${allowedStatuses.join(', ')}`
+      });
+    }
+  
+    try {
+      const car = await CarProvider.findById(req.params.id);
+
+      if (!car) {
+        return res.status(404).json({ success: false, message: 'Car not found' });
+      }
+
+      const currentStatus = car.status;
+
+      const validTransitions = {
+        available: ['rented'],       // available -> rented
+        rented: ['received'],        // rented -> received
+        received: ['returned'],      // received -> returned
+        returned: ['available'],     // returned -> available
+      };
+
+      // check transition
+      if (!validTransitions[currentStatus].includes(status)) {
+        return res.status(400).json({
+          success: false,
+          message: `Invalid status transition from '${currentStatus}' to '${status}'`
+        });
+      }
+
+      // update status
+      car.status = status;
+      await car.save();
+
+      res.status(200).json({
+        success: true,
+        message: `Status updated to '${status}'`,
+        status: car.status
+      });
+    } catch (err) {
+      res.status(500).json({ success: false, message: err.message });
+    }
+};
