@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const status = require('statuses');
 
 const CarProviderSchema = new mongoose.Schema({
     name: {
@@ -53,6 +54,10 @@ const CarProviderSchema = new mongoose.Schema({
         type: String,
         enum: ['available', 'rented', 'received', 'returned'],
         default: 'available'
+    },
+    renter: {
+        type: Schema.Types.ObjectId,
+        ref: 'Renter',
     }
 }
 ,{
