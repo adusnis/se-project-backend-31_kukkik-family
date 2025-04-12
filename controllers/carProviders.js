@@ -288,7 +288,7 @@ exports.updateCarStatus = async (req, res) => {
 
       const validTransitions = {
         available: ['rented'],       // available -> rented
-        rented: ['received'],        // rented -> received
+        rented: ['received'],// rented -> received
         received: ['returned'],      // received -> returned
         returned: ['available'],     // returned -> available
       };

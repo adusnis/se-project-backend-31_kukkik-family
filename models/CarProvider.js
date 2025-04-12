@@ -54,10 +54,10 @@ const CarProviderSchema = new mongoose.Schema({
         enum: ['available', 'rented', 'received', 'returned'],
         default: 'available'
     },
-    renter: {
-        type: Schema.Types.ObjectId,
-        ref: 'Renter',
-    }
+    // renter: {
+    //     type: Schema.Types.ObjectId,
+    //     ref: 'Renter',
+    // }
 }
 ,{
         toJSON:{virtuals:true},
