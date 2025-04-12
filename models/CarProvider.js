@@ -56,8 +56,8 @@ const CarProviderSchema = new mongoose.Schema({
         default: 'available'
     },
     renter: {
-        type: Schema.Types.ObjectId,
-        ref: 'Renter',
+        type: mongoose.Schema.ObjectId,
+        ref: 'User',
     }
 }
 ,{

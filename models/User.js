@@ -29,7 +29,7 @@ const UserSchema=new mongoose.Schema({
     },
     role:{
         type:String,
-        enum:['user','admin'],
+        enum:['user','admin', 'renter'],
         default:'user'
     },
     resetPasswordToken: String,
@@ -47,7 +47,11 @@ const UserSchema=new mongoose.Schema({
         required: true,
         min: [0, 'Coin must be a non-negative number'],
         default: 0
-    }
+    },
+    rentalCars: [{
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'CarProvider'
+    }],
 
 });
 
