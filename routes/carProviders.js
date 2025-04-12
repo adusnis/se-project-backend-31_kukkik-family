@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { getCarProviders, getCarProvider, createCarProvider, updateCarProvider, deleteCarProvider, likeCarProvider } = require('../controllers/carProviders');
+const { getCarProviders, getCarProvider, createCarProvider, updateCarProvider, deleteCarProvider, likeCarProvider, getCarStatus, updateCarStatus } = require('../controllers/carProviders');
 
 const bookingRouter = require('./bookings');
 
@@ -11,6 +11,10 @@ router.use('/:carProviderId/bookings/', bookingRouter);
 router.route('/').get(getCarProviders).post(protect, authorize('admin'), createCarProvider);
 router.route('/:id').get(getCarProvider).put(protect, authorize('admin'), updateCarProvider).delete(protect, authorize('admin'), deleteCarProvider);
 router.route('/:id/like').post(protect, authorize('user', 'admin'), likeCarProvider);
+router.route('/:id/status')
+  .get(protect, authorize('user', 'admin'), getCarStatus) 
+  .put(protect, authorize('user', 'admin'), updateCarStatus);
+
 
 module.exports = router;
 
