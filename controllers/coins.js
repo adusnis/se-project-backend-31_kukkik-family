@@ -94,6 +94,12 @@ exports.deductCoins = async (req, res, next) => {
                 message: "Cannot fetch user"
             });
 
+        if(user.coin < req.body.coin)
+            return res.status(400).json({
+                success: false,
+                message: "Not enough coins to deduct"
+            });
+
         user = await User.findByIdAndUpdate(req.user.id, {
            $inc: { coin: -req.body.coin }, 
         }, {

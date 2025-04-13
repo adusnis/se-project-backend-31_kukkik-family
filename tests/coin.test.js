@@ -183,4 +183,18 @@ describe('Deduct coin scenario', () => {
             message: 'Coin value must be a non-negative number'
         });
     })
+
+    test("Deduct coin should return 400 status if the coin deducting is more than user's coin", async () => {
+        
+        req.body = { coin: 5000 };
+
+        await deductCoins(req, res);
+
+        expect(res.status).toHaveBeenCalledWith(400);
+        expect(res.json).toHaveBeenCalledWith({
+            success: false,
+            message: 'Not enough coins to deduct'
+        });
+
+    })
 })
