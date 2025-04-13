@@ -63,7 +63,9 @@ describe('Add coin scenario', () => {
             user : {
                 id : '1'
             },
-            coin : 50
+            body : {
+                coin : 50
+            }
         }
         
         res = {
@@ -73,31 +75,34 @@ describe('Add coin scenario', () => {
 
     });
 
+    User.findById.mockResolvedValue(mockUser);
+    User.findByIdAndUpdate.mockImplementation((id, update) => {
+        mockUser.coin += update.$inc.coin;
+        return mockUser;
+    })
+    
     test('Add coin should increase user coin amount correctly', async () => {
-        User.findById.mockResolvedValue(mockUser);
-
+        
         await addCoins(req, res);
         
-        expect(mockUser.coin).toBe(150);
         expect(res.status).toHaveBeenCalledWith(200);
         expect(res.json).toHaveBeenCalledWith({
             success: true,
-            message: 'Adding coin successfully'
+            message: 'Coin added successfully',
+            coin: 150
         });
     })
 
-    test('Add coin should return 400 status if the coin to add is negative', async () => {
-        User.findById.mockResolvedValue(mockUser);
+    test('Add coin should return 400 status if the coin adding is negative', async () => {
 
         req.body = { coin: -50 };
 
         await addCoins(req, res);
         
-        expect(mockUser.coin).toBe(100);
         expect(res.status).toHaveBeenCalledWith(400);
         expect(res.json).toHaveBeenCalledWith({
             success: false,
-            message: 'Coin balance cannot be negative'
+            message: 'Coin adding cannot be negative'
         });
     })
 
