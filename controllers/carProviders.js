@@ -286,7 +286,7 @@ exports.updateCarStatus = async (req, res) => {
 
       const currentStatus = car.status;
 
-      const validTransitions = {
+    const validTransitions = {
         available: ['rented'],       // available -> rented
         rented: ['received'],// rented -> received
         received: ['returned'],      // received -> returned
@@ -314,3 +314,4 @@ exports.updateCarStatus = async (req, res) => {
       res.status(500).json({ success: false, message: err.message });
     }
 };
+

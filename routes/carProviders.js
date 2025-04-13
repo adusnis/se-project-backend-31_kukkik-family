@@ -11,9 +11,9 @@ router.use('/:carProviderId/bookings/', bookingRouter);
 router.route('/').get(getCarProviders).post(protect, authorize('admin'), createCarProvider);
 router.route('/:id').get(getCarProvider).put(protect, authorize('admin'), updateCarProvider).delete(protect, authorize('admin'), deleteCarProvider);
 router.route('/:id/like').post(protect, authorize('user', 'admin'), likeCarProvider);
-router.route('/:id/status')
-  .get(protect, authorize('user', 'admin'), getCarStatus) 
-  .put(protect, authorize('user', 'admin'), updateCarStatus);
+// router.route('/:id/status')
+//   .get(protect, authorize('user', 'admin'), getCarStatus) 
+//   .put(protect, authorize('user', 'admin'), updateCarStatus);
 
 
 module.exports = router;

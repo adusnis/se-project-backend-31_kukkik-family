@@ -22,7 +22,12 @@ const BookingSchema = new mongoose.Schema({
     createdAt: {
         type: Date,
         default: Date.now
-    }
+    },
+    status: {
+        type: String,
+        enum: ['rented', 'received', 'returned'],
+        default: 'rented'
+      }
 });
 
 // 🔥 Move endDate validation to a pre-hook

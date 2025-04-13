@@ -204,3 +204,51 @@ exports.deleteBooking = async (req, res, next) => {
         });
     }
 };
+
+// @desc GET booking status
+// @route GET /api/bookings/:id/status
+// @access Private
+exports.getBookingStatus = async (req, res) => {
+    try {
+      const booking = await Booking.findById(req.params.id).select('status');
+  
+      if (!booking) {
+        return res.status(404).json({ success: false, message: 'Booking not found' });
+      }
+  
+      res.status(200).json({ success: true, status: booking.status });
+    } catch (err) {
+      res.status(500).json({ success: false, message: err.message });
+    }
+  };
+  
+
+// @desc UPDATE booking status
+// @route PATCH /api/bookings/:id/status
+// @access Private
+exports.updateBookingStatus = async (req, res) => {
+    const { status } = req.body;
+    const allowedStatuses = ['rented', 'received', 'returned'];
+  
+    if (!allowedStatuses.includes(status)) {
+      return res.status(400).json({
+        success: false,
+        message: `Invalid status. Must be one of ${allowedStatuses.join(', ')}`,
+      });
+    }
+  
+    try {
+      const booking = await Booking.findById(req.params.id);
+      if (!booking) {
+        return res.status(404).json({ success: false, message: 'Booking not found' });
+      }
+  
+      booking.status = status;
+      await booking.save();
+  
+      res.status(200).json({ success: true, status: booking.status });
+    } catch (err) {
+      res.status(500).json({ success: false, message: err.message });
+    }
+  };
+  

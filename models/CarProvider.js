@@ -49,11 +49,11 @@ const CarProviderSchema = new mongoose.Schema({
         required: [false, 'Please add a like number'],
         default: 0
     },
-    status: {
-        type: String,
-        enum: ['available', 'rented', 'received', 'returned'],
-        default: 'available'
-    },
+    // status: {
+    //     type: String,
+    //     enum: ['available', 'rented', 'received', 'returned'],
+    //     default: 'available'
+    // },
     // renter: {
     //     type: Schema.Types.ObjectId,
     //     ref: 'Renter',
