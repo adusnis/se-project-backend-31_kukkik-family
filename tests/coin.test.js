@@ -1,6 +1,6 @@
 const request = require('supertest');
 const mongoose = require('mongoose')
-const { addCoins, getCoins } = require('./../controllers/coins');
+const { addCoins, getCoins, deductCoins } = require('./../controllers/coins');
 const User = require('../models/User');
 
 jest.mock('../models/User');
@@ -124,5 +124,63 @@ describe('Add coin scenario', () => {
 });
 
 describe('Deduct coin scenario', () => {
+    let req, res;
 
+    const mockUser = {
+        _id: '1', 
+        coin: 100, 
+        save: jest.fn().mockResolvedValue(true),
+      };
+      
+
+    beforeEach(() => {
+        jest.clearAllMocks();
+        
+        req = {
+            user : {
+                id : '1'
+            },
+            body : {
+                coin : 50
+            }
+        }
+        
+        res = {
+            status: jest.fn().mockReturnThis(),
+            json: jest.fn()
+        };
+
+        User.findById.mockResolvedValue(mockUser);
+        User.findByIdAndUpdate.mockImplementation((id, update) => {
+            mockUser.coin += update.$inc.coin;
+            return mockUser;
+        })
+
+    });
+
+    test('Deduct coin should deduct user coin successfully', async () => {
+        req.body = { coin: 50};
+
+        await deductCoins(req, res);
+
+        expect(res.status).toHaveBeenCalledWith(200);
+        expect(res.json).toHaveBeenCalledWith({
+            success: true,
+            message: 'Coin deducted successfully',
+            coin: 50
+        });
+    })
+
+    test('Deduct coin should return 400 status if the coin deducting is negative', async () => {
+
+        req.body = { coin: -50 };
+
+        await deductCoins(req, res);
+        
+        expect(res.status).toHaveBeenCalledWith(400);
+        expect(res.json).toHaveBeenCalledWith({
+            success: false,
+            message: 'Coin value must be a non-negative number'
+        });
+    })
 })
