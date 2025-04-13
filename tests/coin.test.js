@@ -41,7 +41,7 @@ describe('Get coin scenario', ()=>{
             success: true,
             coin: 100
         });
-    })
+    });
 
 
 });
@@ -73,13 +73,15 @@ describe('Add coin scenario', () => {
             json: jest.fn()
         };
 
+        User.findById.mockResolvedValue(mockUser);
+        User.findByIdAndUpdate.mockImplementation((id, update) => {
+            mockUser.coin += update.$inc.coin;
+            return mockUser;
+        })
+
     });
 
-    User.findById.mockResolvedValue(mockUser);
-    User.findByIdAndUpdate.mockImplementation((id, update) => {
-        mockUser.coin += update.$inc.coin;
-        return mockUser;
-    })
+    //Black Box
     
     test('Add coin should increase user coin amount correctly', async () => {
         
@@ -102,9 +104,25 @@ describe('Add coin scenario', () => {
         expect(res.status).toHaveBeenCalledWith(400);
         expect(res.json).toHaveBeenCalledWith({
             success: false,
-            message: 'Coin adding cannot be negative'
+            message: 'Coin value must be a non-negative number'
         });
     })
 
+    test('Add coin should return 400 status if there is no coin field in the body', async () => {
+        req.body = {};
 
+        await addCoins(req, res);
+
+        expect(res.status).toHaveBeenCalledWith(400);
+        expect(res.json).toHaveBeenCalledWith({
+            success: false,
+            message: 'Coin value must be specified'
+        });
+    })
+
+    //White Box
 });
+
+describe('Deduct coin scenario', () => {
+
+})

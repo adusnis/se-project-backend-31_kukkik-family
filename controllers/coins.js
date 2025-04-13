@@ -29,10 +29,16 @@ exports.getCoins = async (req, res, next) => {
 
 exports.addCoins = async (req, res, next) => {
     try {
-        if(req.body.coin < 0)  
+        if(!req.body.coin)
             return res.status(400).json({
                 success: false,
-                message: "Coin adding cannot be negative"
+                message: "Coin value must be specified"
+            })
+
+        if(typeof req.body.coin !== 'number' || req.body.coin < 0)  
+            return res.status(400).json({
+                success: false,
+                message: "Coin value must be a non-negative number"
             });
         
         let user = await User.findById(req.user.id);
