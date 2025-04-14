@@ -1,6 +1,9 @@
 const { message } = require('statuses');
 const User = require('../models/User')
 
+// @desc    Get user's coin
+// @route   GET /api/v1/coins
+// @access  Public
 exports.getCoins = async (req, res, next) => {
     try {
         const user = await User.findById(req.user.id);
@@ -27,6 +30,9 @@ exports.getCoins = async (req, res, next) => {
     }
 };
 
+// @desc    Add coin to user's wallet
+// @route   PUT /api/v1/coins/add
+// @access  Public
 exports.addCoins = async (req, res, next) => {
     try {
         if(!req.body.coin)
@@ -72,6 +78,9 @@ exports.addCoins = async (req, res, next) => {
     }
 }
 
+// @desc    Deduct coin from user's wallet
+// @route   PUT /api/v1/coins/deduct
+// @access  Public
 exports.deductCoins = async (req, res, next) => {
     try {
         if(!req.body.coin)
