@@ -5,9 +5,9 @@ const router = express.Router();
 
 const {protect, authorize} = require('../middleware/auth');
 
-router('/').get(protect, authorize('admin', 'user', 'renter'), getCoins)
-router('/add').put(protect, authorize('admin', 'user', 'renter'), addCoins)
-router('/deduct').put(protect, authorize('admin', 'user', 'renter'), deductCoins)
-router('/redeem/:code').get(redeemCoins, addCoins)
+router.route('/').get(protect, authorize('admin', 'user', 'renter'), getCoins)
+router.route('/add').put(protect, authorize('admin', 'user', 'renter'), addCoins)
+router.route('/deduct').put(protect, authorize('admin', 'user', 'renter'), deductCoins)
+router.route('/redeem/:code').get(redeemCoins, addCoins)
     
 module.exports = router;
