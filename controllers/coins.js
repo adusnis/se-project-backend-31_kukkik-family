@@ -1,5 +1,6 @@
 const { message } = require('statuses');
-const User = require('../models/User')
+const User = require('../models/User');
+const QrCode = require('../models/QrCode');
 
 // @desc    Get user's coin
 // @route   GET /api/v1/coins
@@ -127,6 +128,44 @@ exports.deductCoins = async (req, res, next) => {
         res.status(500).json({
             success: false,
             message: "Cannot deduct coins",
+            error: err.message
+        })
+    }
+}
+
+// @desc    Redeem coin from code to user's wallet
+// @route   PUT /api/v1/coins/deduct
+// @access  Public
+exports.redeemCoins = async (req, res, next) => {
+    try {
+        const redeemCode = req.params.code;
+
+        let qrCode = await QrCode.findOne({ code: redeemCode}) 
+
+        if(!qrCode)
+            return res.status(404).json({
+                success: false,
+                message: `There's no redeem code with code ${redeemCode}`
+            });
+            
+        if(qrCode.expiresAt < Date.now())
+            return res.status(400).json({
+                success: false,
+                message: 'The QrCode redeeming has expired'
+            });
+
+        if(qrCode.status !== 'valid')
+            return res.status(400).json({
+                success: false,
+                message: `The QrCode redeeming is ${qrCode.status}`
+            });
+
+        next();
+    } catch (err) {
+        console.log(err);
+        res.status(500).json({
+            success: false,
+            message: "Cannot redeem coins",
             error: err.message
         })
     }
