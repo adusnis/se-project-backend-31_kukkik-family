@@ -30,6 +30,13 @@ exports.getCoins = async (req, res, next) => {
     }
 };
 
+// @desc    Gen QR code of API addCoins
+// @route   GET /api/v1/coins/qr
+// @access  Public
+exports.qrCode = async (req, res, next) => {
+    
+}
+
 // @desc    Add coin to user's wallet
 // @route   PUT /api/v1/coins/add
 // @access  Public

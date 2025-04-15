@@ -8,5 +8,5 @@ const {protect, authorize} = require('../middleware/auth');
 router('/').get(protect, authorize('admin', 'user', 'renter'), getCoins)
 router('/add').put(protect, authorize('admin', 'user', 'renter'), addCoins)
 router('/deduct').put(protect, authorize('admin', 'user', 'renter'), deductCoins)
-    
+router('/qr').get(protect, authorize('admin', 'user', 'renter'), qrCode)
 module.exports = router;
