@@ -1,47 +1,69 @@
-const request = require('supertest');
-const mongoose = require('mongoose')
-const { getQR } = require('../controllers/coins');
-const QrCodes = require('../models/QrCodes');
-jest.mock('../models/QrCodes');
+jest.mock('../models/QrCode'); // mock module ที่ถูกต้อง
 
-describe('Request QrCode scenario', ()=>{
-    let req, res;
-
-    const mockUser = {
-        _id: '1', 
-        save: jest.fn().mockResolvedValue(true),
-      };
-      
+const QrCode = require('../models/QrCode'); // เรียกใช้ตัวเดียวกับที่ mock
+const { getQR } = require('./../controllers/coins');
+describe('getQR', () => {
     beforeEach(() => {
-        jest.clearAllMocks();
-        
-        req = {
-            user : {
-                id : '1'
-            },
-            coin : {
-                amount : 14
+        jest.clearAllMocks(); // รีเซ็ต mock ก่อนแต่ละเทสต์
+    });
+
+    it('should generate QR code successfully', async () => {
+        const saveMock = jest.fn();
+        QrCode.mockImplementation(() => ({
+            save: saveMock
+        }));
+    
+        const req = {
+            user: { id: '6733271021' },
+            body :{
+                    coin: 5000
             }
-        }
-        
-        res = {
-            status: jest.fn().mockReturnThis(),
-            json: jest.fn()
         };
 
+        const res = {
+            json: jest.fn(),
+            status: jest.fn().mockReturnThis()
+        };
+
+        QrCode.mockImplementation(() => ({
+            save: jest.fn()
+        }));
+
+        await getQR(req, res);
+
+        expect(res.json).toHaveBeenCalledWith(
+            expect.objectContaining({
+                success: true,
+                qrCode: expect.any(String)
+            })
+        );
     });
-    
-    test('GET coin should show coins successfully', async () => {
-        User.findById.mockResolvedValue(mockUser);
 
-        await getCoins(req, res);
-        
-        expect(res.status).toHaveBeenCalledWith(200);
-        expect(res.json).toHaveBeenCalledWith({
-            success: true,
-            coin: 100
-        });
+    it('should return 500 on save error', async () => {
+        const req = {
+            user: { id: '6733271021' },
+            body: {
+                    coin: 5000
+            }
+        };
+
+        const res = {
+            json: jest.fn(),
+            status: jest.fn().mockReturnThis()
+        };
+
+        QrCode.mockImplementation(() => ({
+            save: jest.fn().mockRejectedValue(new Error('DB Error'))
+        }));
+
+        await getQR(req, res);
+
+        expect(res.status).toHaveBeenCalledWith(500);
+        expect(res.json).toHaveBeenCalledWith(
+            expect.objectContaining({
+                success: false,
+                message: 'Cannot generate QR code'
+            })
+        );
     });
-
-
 });

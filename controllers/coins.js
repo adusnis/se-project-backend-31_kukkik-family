@@ -31,21 +31,51 @@ exports.getCoins = async (req, res, next) => {
 };
 
 // @desc    Gen QR code of API addCoins
-// @route   GET /api/v1/getQR
+// @route   POST /api/v1/coins/getQR
 // @access  Private
-// exports.getQR = async (req, res, next) => {
-//     const code = 
-//     const qr = new QRCode({
-//         text: url,
-//         width: 100,
-//         height: 100,
-//         color: {
-//             primary: '#000',
-//             background: '#fff',
-//             },
-//             imageCallback: function (qrimg) {
+const crypto = require('crypto');
+const QrCode = require('../models/QrCode'); // อย่าลืม import model
 
-// }
+exports.getQR = async (req, res, next) => {
+    try {
+        const user = req.user.id;
+        const coin = req.body.coin;
+
+        if (!coin) {
+            return res.status(400).json({
+                success: false,
+                message: "Missing 'coin' in params"
+            });
+        }
+
+        
+        const code = crypto.randomBytes(16).toString('hex');
+
+        const qrCode = new QrCode({
+            code,
+            user,
+            coin,
+            status: 'valid'
+        });
+
+        await qrCode.save();
+
+        res.json({
+            success: true,
+            message: 'QR code generated successfully',
+            qrCode: code
+        });
+
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({
+            success: false,
+            message: 'Cannot generate QR code',
+            error: err.message
+        });
+    }
+};
+
 
 
 // @desc    Add coin to user's wallet
