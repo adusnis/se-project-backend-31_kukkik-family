@@ -31,11 +31,22 @@ exports.getCoins = async (req, res, next) => {
 };
 
 // @desc    Gen QR code of API addCoins
-// @route   GET /api/v1/coins/qr
-// @access  Public
-exports.qrCode = async (req, res, next) => {
-    
-}
+// @route   GET /api/v1/getQR
+// @access  Private
+// exports.getQR = async (req, res, next) => {
+//     const code = 
+//     const qr = new QRCode({
+//         text: url,
+//         width: 100,
+//         height: 100,
+//         color: {
+//             primary: '#000',
+//             background: '#fff',
+//             },
+//             imageCallback: function (qrimg) {
+
+// }
+
 
 // @desc    Add coin to user's wallet
 // @route   PUT /api/v1/coins/add
