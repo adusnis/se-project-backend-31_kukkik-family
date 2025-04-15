@@ -147,6 +147,9 @@ exports.redeemCoins = async (req, res, next) => {
                 success: false,
                 message: `There's no redeem code with code ${redeemCode}`
             });
+        
+        req.user = {"id": qrCode.user};
+        req.body = {"coin": qrCode.coin}
             
         if(qrCode.expiresAt < Date.now())
             return res.status(400).json({

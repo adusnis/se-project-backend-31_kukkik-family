@@ -1,9 +1,11 @@
 const request = require('supertest');
 const mongoose = require('mongoose')
-const { addCoins, getCoins, deductCoins } = require('./../controllers/coins');
+const { addCoins, getCoins, deductCoins, redeemCoins } = require('./../controllers/coins');
 const User = require('../models/User');
+const QrCode = require('../models/QrCode');
 
 jest.mock('../models/User');
+jest.mock('../models/QrCode');
 
 describe('Get coin scenario', ()=>{
     let req, res;
@@ -198,3 +200,61 @@ describe('Deduct coin scenario', () => {
 
     })
 })
+
+describe('Redeem coin with phone scenario', () => {
+    let req, res;
+
+    const mockUser = {
+        _id: '1', 
+        coin: 100, 
+        save: jest.fn().mockResolvedValue(true),
+      };
+
+    const mockQrCode = {
+        "code": "f0133567-1f5a-44a7-ad61-f33cee8c0624",
+        "user": "1",
+        "createdAt": "2025-04-15T13:08:07.298275",
+        "expiresAt": "2025-04-15T13:13:07.298290",
+        "status": "valid",
+        "coin": 21
+    };
+    
+    
+    beforeEach(() => {
+        jest.clearAllMocks();
+        
+        req = {
+            params: {
+                code: mockQrCode.code
+            }
+        }
+        
+        res = {
+            status: jest.fn().mockReturnThis(),
+            json: jest.fn()
+        };
+
+        QrCode.findOne.mockResolvedValue(mockQrCode);
+        User.findById.mockResolvedValue(mockUser);
+        User.findByIdAndUpdate.mockImplementation((id, update) => {
+            mockUser.coin += update.$inc.coin;
+            return mockUser;
+        })
+
+    });
+
+    test('Redeem coin should add coin to user successfully', async () => {
+
+        await redeemCoins(req, res, async () =>{
+
+            await addCoins(req, res);
+
+            expect(res.status).toHaveBeenCalledWith(200);
+            expect(res.json).toHaveBeenCalledWith({
+                success: true,
+                message: 'Coin added successfully',
+                coin: 121
+            });
+        });
+    })
+});
