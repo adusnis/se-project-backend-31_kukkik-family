@@ -1,6 +1,7 @@
 const { message } = require('statuses');
 const User = require('../models/User');
 const QrCode = require('../models/QrCode');
+const Booking = require('../models/Booking');
 const crypto = require('crypto');
 
 // @desc    Get user's coin
@@ -219,6 +220,34 @@ exports.redeemCoins = async (req, res, next) => {
         res.status(500).json({
             success: false,
             message: "Cannot redeem coins",
+            error: err.message
+        })
+    }
+}
+
+// @desc    Redeem coin from code to user's wallet
+// @route   PUT /api/v1/coins/deduct
+// @access  Public
+exports.transferNetRevenue = async (req, res, next) => {
+    try {
+        const booking = await Booking.findById(req.body.bookingId).populate('carProvider');
+
+        const price = booking.carProvider.dailyrate;
+
+        if(booking.user.toString() !== req.user.id && req.user.role !== 'admin') 
+            return res.status(400).json({
+                success: false,
+                message: 'You are not authorized to confirm this booking'
+            })
+
+        const netAmount = price + 1; // calculate net revenue here
+
+        next();
+    } catch (err) {
+        console.log(err);
+        res.status(500).json({
+            success: false,
+            message: "Cannot transfer coins from system to user",
             error: err.message
         })
     }
