@@ -55,6 +55,8 @@ exports.addCoins = async (req, res, next) => {
                 success: false,
                 message: "Cannot fetch user"
             });
+        
+
 
         user = await User.findByIdAndUpdate(req.user.id, {
            $inc: { coin: req.body.coin }, 
@@ -150,17 +152,18 @@ exports.redeemCoins = async (req, res, next) => {
         
         req.user = {"id": qrCode.user};
         req.body = {"coin": qrCode.coin}
-            
-        if(qrCode.expiresAt < Date.now())
+        
+        if(new Date(qrCode.expiresAt).getTime() < Date.now())
             return res.status(400).json({
                 success: false,
-                message: 'The QrCode redeeming has expired'
+                message: 'The redeem code has expired'
             });
+        
 
         if(qrCode.status !== 'valid')
             return res.status(400).json({
                 success: false,
-                message: `The QrCode redeeming is ${qrCode.status}`
+                message: `The redeem code is ${qrCode.status}`
             });
 
         next();
