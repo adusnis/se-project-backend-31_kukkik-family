@@ -3,7 +3,7 @@ const User = require('../models/User')
 
 // @desc    Get user's coin
 // @route   GET /api/v1/coins
-// @access  Public
+// @access  Private
 exports.getCoins = async (req, res, next) => {
     try {
         const user = await User.findById(req.user.id);
@@ -50,7 +50,7 @@ exports.getCoins = async (req, res, next) => {
 
 // @desc    Add coin to user's wallet
 // @route   PUT /api/v1/coins/add
-// @access  Public
+// @access  Private
 exports.addCoins = async (req, res, next) => {
     try {
         if(!req.body.coin)
@@ -98,7 +98,7 @@ exports.addCoins = async (req, res, next) => {
 
 // @desc    Deduct coin from user's wallet
 // @route   PUT /api/v1/coins/deduct
-// @access  Public
+// @access  Private
 exports.deductCoins = async (req, res, next) => {
     try {
         if(!req.body.coin)
