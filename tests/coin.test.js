@@ -45,6 +45,30 @@ describe('Get coin scenario', ()=>{
         });
     });
 
+    test('GET coin should return 404 status if there is no user', async () => {
+        User.findById.mockResolvedValue(null);
+
+        await getCoins(req, res);
+        
+        expect(res.status).toHaveBeenCalledWith(404);
+        expect(res.json).toHaveBeenCalledWith({
+            success: false,
+            message: 'Cannot fetch user'
+        });
+    });
+
+    test('GET coin should return 500 status if getCoins throws an error', async () => {
+        User.findById.mockRejectedValue(new Error("Database failure"));
+    
+        await getCoins(req, res);
+    
+        expect(res.status).toHaveBeenCalledWith(500);
+        expect(res.json).toHaveBeenCalledWith({
+            success: false,
+            message: "Cannot fetch coins",
+            error: "Database failure"
+        });
+    });
 
 });
 
@@ -122,7 +146,30 @@ describe('Add coin scenario', () => {
         });
     })
 
-    //White Box
+    test('Add coin should return 404 status if there is no user', async () => {
+        User.findById.mockResolvedValue(null);
+
+        await addCoins(req, res);
+        
+        expect(res.status).toHaveBeenCalledWith(404);
+        expect(res.json).toHaveBeenCalledWith({
+            success: false,
+            message: 'Cannot fetch user'
+        });
+    });
+
+    test('Add coin should return 500 status if getCoins throws an error', async () => {
+        User.findByIdAndUpdate.mockRejectedValue(new Error("Database failure"));
+    
+        await addCoins(req, res);
+    
+        expect(res.status).toHaveBeenCalledWith(500);
+        expect(res.json).toHaveBeenCalledWith({
+            success: false,
+            message: "Cannot add coins",
+            error: "Database failure"
+        });
+    });
 });
 
 describe('Deduct coin scenario', () => {
@@ -199,6 +246,43 @@ describe('Deduct coin scenario', () => {
         });
 
     })
+
+    test('Deduct coin should return 400 status if there is no coin field in the body', async () => {
+        req.body = {};
+
+        await deductCoins(req, res);
+
+        expect(res.status).toHaveBeenCalledWith(400);
+        expect(res.json).toHaveBeenCalledWith({
+            success: false,
+            message: 'Coin value must be specified'
+        });
+    })
+
+    test('Deduct coin should return 404 status if there is no user', async () => {
+        User.findById.mockResolvedValue(null);
+
+        await deductCoins(req, res);
+        
+        expect(res.status).toHaveBeenCalledWith(404);
+        expect(res.json).toHaveBeenCalledWith({
+            success: false,
+            message: 'Cannot fetch user'
+        });
+    });
+
+    test('Deduct coin should return 500 status if getCoins throws an error', async () => {
+        User.findById.mockRejectedValue(new Error("Database failure"));
+    
+        await deductCoins(req, res);
+    
+        expect(res.status).toHaveBeenCalledWith(500);
+        expect(res.json).toHaveBeenCalledWith({
+            success: false,
+            message: "Cannot deduct coins",
+            error: "Database failure"
+        });
+    });
 })
 
 describe('Redeem coin with phone scenario', () => {
@@ -302,11 +386,24 @@ describe('Redeem coin with phone scenario', () => {
         });
     });
 
-    test('should return 500 status if redeemCoins throws an error', async () => {
+    test('Redeem coin should return 500 status if redeemCoins throws an error', async () => {
         // Force QrCode.findOne to throw an error
         QrCode.findOne.mockRejectedValue(new Error("Database failure"));
     
         await redeemCoins(req, res, next);
+    
+        expect(res.status).toHaveBeenCalledWith(500);
+        expect(res.json).toHaveBeenCalledWith({
+            success: false,
+            message: "Cannot redeem coins",
+            error: "Database failure"
+        });
+    });
+
+    test('Redeem coin should return 500 status if getCoins throws an error', async () => {
+        QrCode.findOne.mockRejectedValue(new Error("Database failure"));
+    
+        await redeemCoins(req, res);
     
         expect(res.status).toHaveBeenCalledWith(500);
         expect(res.json).toHaveBeenCalledWith({

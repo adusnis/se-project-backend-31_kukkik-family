@@ -236,17 +236,35 @@ exports.redeemCoins = async (req, res, next) => {
 // @access  Public
 exports.transferNetRevenue = async (req, res, next) => {
     try {
+        
+        if (!req.body.bookingId ) 
+            return res.status(400).json({
+                success: false,
+                message: 'Invalid or missing booking ID'
+            });
+
         const booking = await Booking.findById(req.body.bookingId).populate('carProvider');
 
-        const price = booking.carProvider.dailyrate;
+        if(!booking)
+            return res.status(404).json({
+                success: false,
+                message: 'Booking not found'
+            });
+
 
         if(booking.user.toString() !== req.user.id && req.user.role !== 'admin') 
-            return res.status(400).json({
+            return res.status(401).json({
+
                 success: false,
                 message: 'You are not authorized to confirm this booking'
             })
-
-        const netAmount = price + 1; // calculate net revenue here
+            
+            
+        const PLATFORM_FEE = 30;
+        const price = booking.carProvider.dailyrate;
+        const netAmount = price - PLATFORM_FEE; // calculate net revenue here
+        
+        req.body.coin = netAmount;
 
         next();
     } catch (err) {
