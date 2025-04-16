@@ -202,7 +202,8 @@ describe('Deduct coin scenario', () => {
 })
 
 describe('Redeem coin with phone scenario', () => {
-    let req, res;
+    let req, res, next;
+    let mockQrCode;
 
     const mockUser = {
         _id: '1', 
@@ -210,19 +211,20 @@ describe('Redeem coin with phone scenario', () => {
         save: jest.fn().mockResolvedValue(true),
       };
 
-    const mockQrCode = {
-        "code": "f0133567-1f5a-44a7-ad61-f33cee8c0624",
-        "user": "1",
-        "createdAt": "2025-04-15T13:08:07.298275",
-        "expiresAt": "2025-04-15T13:13:07.298290",
-        "status": "valid",
-        "coin": 21
-    };
     
     
     beforeEach(() => {
         jest.clearAllMocks();
-        
+
+        mockQrCode = {
+            code: "f0133567-1f5a-44a7-ad61-f33cee8c0624",
+            user: "1",
+            createdAt: new Date(),
+            expiresAt: new Date(Date.now() + 5 * 60 * 1000),
+            status: "valid",
+            coin: 21
+        };
+
         req = {
             params: {
                 code: mockQrCode.code
@@ -234,7 +236,11 @@ describe('Redeem coin with phone scenario', () => {
             json: jest.fn()
         };
 
+        next = jest.fn();
+
         QrCode.findOne.mockResolvedValue(mockQrCode);
+        QrCode.findByIdAndUpdate.mockResolvedValue(mockQrCode);
+
         User.findById.mockResolvedValue(mockUser);
         User.findByIdAndUpdate.mockImplementation((id, update) => {
             mockUser.coin += update.$inc.coin;
@@ -245,16 +251,68 @@ describe('Redeem coin with phone scenario', () => {
 
     test('Redeem coin should add coin to user successfully', async () => {
 
-        await redeemCoins(req, res, async () =>{
+        await redeemCoins(req, res, next);
+        
+        await addCoins(req, res);
 
-            await addCoins(req, res);
-
-            expect(res.status).toHaveBeenCalledWith(200);
-            expect(res.json).toHaveBeenCalledWith({
-                success: true,
-                message: 'Coin added successfully',
-                coin: 121
-            });
+        expect(next).toHaveBeenCalledWith();
+        expect(res.status).toHaveBeenCalledWith(200);
+        expect(res.json).toHaveBeenCalledWith({
+            success: true,
+            message: 'Coin added successfully',
+            coin: 121
         });
     })
+
+    test('Redeem coin should return 404 status if redeem code does not exist', async () => {
+        req.params.code = '24211'
+
+        QrCode.findOne.mockResolvedValue(null);
+
+        await redeemCoins(req, res, next);
+
+        expect(res.status).toHaveBeenCalledWith(404);
+        expect(res.json).toHaveBeenCalledWith({
+            success: false,
+            message: `There's no redeem code with code ${req.params.code}`
+        });
+    });
+
+    test('Redeem coin should return 400 status if redeem code status is invalid', async () => {
+        mockQrCode.status = 'invalid'
+
+        await redeemCoins(req, res, next);
+
+        expect(res.status).toHaveBeenCalledWith(400);
+        expect(res.json).toHaveBeenCalledWith({
+            success: false,
+            message: `The redeem code is ${mockQrCode.status}`
+        });
+    });
+
+    test('Redeem coin should return 400 status if redeem code status is invalid', async () => {
+        mockQrCode.expiresAt = new Date(Date.now() - 5 * 60 * 1000);
+
+        await redeemCoins(req, res, next);
+
+        expect(res.status).toHaveBeenCalledWith(400);
+        expect(res.json).toHaveBeenCalledWith({
+            success: false,
+            message: `The redeem code has expired`
+        });
+    });
+
+    test('should return 500 status if redeemCoins throws an error', async () => {
+        // Force QrCode.findOne to throw an error
+        QrCode.findOne.mockRejectedValue(new Error("Database failure"));
+    
+        await redeemCoins(req, res, next);
+    
+        expect(res.status).toHaveBeenCalledWith(500);
+        expect(res.json).toHaveBeenCalledWith({
+            success: false,
+            message: "Cannot redeem coins",
+            error: "Database failure"
+        });
+    });
 });
