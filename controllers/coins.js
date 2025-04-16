@@ -184,7 +184,7 @@ exports.deductCoins = async (req, res, next) => {
 }
 
 // @desc    Redeem coin from code to user's wallet
-// @route   PUT /api/v1/coins/deduct
+// @route   GET /api/v1/coins/redeem/:code
 // @access  Public
 exports.redeemCoins = async (req, res, next) => {
     try {
