@@ -214,6 +214,12 @@ exports.redeemCoins = async (req, res, next) => {
                 message: `The redeem code is ${qrCode.status}`
             });
 
+        await QrCode.findByIdAndUpdate(qrCode._id, {
+                $set : {status: 'invalid'} 
+            }, {
+                runValidators: true
+            });
+
         next();
     } catch (err) {
         console.log(err);
