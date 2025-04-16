@@ -130,4 +130,19 @@ describe('Transfer coin to renter', () => {
             message: 'Invalid or missing booking ID'
         });
     })
+
+    test('transfer net revenue should return 500 status if getCoins throws an error', async () => {
+        Booking.findById = jest.fn().mockReturnValue({
+            populate: jest.fn().mockRejectedValue(new Error("Database failure"))
+        });
+    
+        await transferNetRevenue(req, res, next);
+    
+        expect(res.status).toHaveBeenCalledWith(500);
+        expect(res.json).toHaveBeenCalledWith({
+            success: false,
+            message: "Cannot transfer coins from system to user",
+            error: "Database failure"
+        });
+    });
 });

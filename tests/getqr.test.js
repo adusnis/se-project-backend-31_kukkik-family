@@ -66,4 +66,34 @@ describe('getQR', () => {
             })
         );
     });
+
+    it('should return 400 on missing coin in params', async () => {
+        const saveMock = jest.fn();
+        QrCode.mockImplementation(() => ({
+            save: saveMock
+        }));
+    
+        const req = {
+            user: { id: '6733271021' },
+            body :{}
+        };
+
+        const res = {
+            json: jest.fn(),
+            status: jest.fn().mockReturnThis()
+        };
+
+        QrCode.mockImplementation(() => ({
+            save: jest.fn()
+        }));
+
+        await getQR(req, res);
+
+        expect(res.json).toHaveBeenCalledWith(
+            expect.objectContaining({
+                success: false,
+                message: "Missing 'coin' in params"
+            })
+        );
+    });
 });
