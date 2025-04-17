@@ -260,9 +260,9 @@ exports.transferNetRevenue = async (req, res, next) => {
             })
             
             
-        const PLATFORM_FEE = 30;
+        const PLATFORM_FEE = 10;
         const price = booking.carProvider.dailyrate;
-        const netAmount = price - PLATFORM_FEE; // calculate net revenue here
+        const netAmount = price * (100 - PLATFORM_FEE) / 100 ; // calculate net revenue here
         
         req.body.coin = netAmount;
 
