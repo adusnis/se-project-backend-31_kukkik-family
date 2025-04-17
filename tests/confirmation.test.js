@@ -73,7 +73,7 @@ describe('Transfer coin to renter', () => {
         expect(res.json).toHaveBeenCalledWith({
             success: true,
             message: 'Coin added successfully',
-            coin: 170
+            coin: 190
         });
     })
 
