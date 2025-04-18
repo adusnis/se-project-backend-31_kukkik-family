@@ -83,6 +83,14 @@ exports.addBooking = async (req, res, next) => {
             return res.status(404).json({ success: false, message: `No car provider with ID ${req.params.carProviderId}` });
         }
 
+        // Check if car is available before booking
+        if (carProvider.status !== 'available') {
+            return res.status(400).json({
+                success: false,
+                message: `Car with ID ${req.params.carProviderId} is not available for booking`
+            });
+        }
+
         //add user Id to req.body
         req.body.user = req.user.id;
         
@@ -98,7 +106,13 @@ exports.addBooking = async (req, res, next) => {
             });
         }
 
+         // Create booking
         const booking = await Booking.create(req.body);
+
+        // Update car status to "rented"
+        await CarProvider.findByIdAndUpdate(req.params.carProviderId, {
+            status: 'rented'
+        });
 
         res.status(201).json({
             success: true,
@@ -190,3 +204,51 @@ exports.deleteBooking = async (req, res, next) => {
         });
     }
 };
+
+// @desc GET booking status
+// @route GET /api/bookings/:id/status
+// @access Private
+exports.getBookingStatus = async (req, res) => {
+    try {
+      const booking = await Booking.findById(req.params.id).select('status');
+  
+      if (!booking) {
+        return res.status(404).json({ success: false, message: 'Booking not found' });
+      }
+  
+      res.status(200).json({ success: true, status: booking.status });
+    } catch (err) {
+      res.status(500).json({ success: false, message: err.message });
+    }
+  };
+  
+
+// @desc UPDATE booking status
+// @route PATCH /api/bookings/:id/status
+// @access Private
+exports.updateBookingStatus = async (req, res) => {
+    const { status } = req.body;
+    const allowedStatuses = ['rented', 'received', 'returned'];
+  
+    if (!allowedStatuses.includes(status)) {
+      return res.status(400).json({
+        success: false,
+        message: `Invalid status. Must be one of ${allowedStatuses.join(', ')}`,
+      });
+    }
+  
+    try {
+      const booking = await Booking.findById(req.params.id);
+      if (!booking) {
+        return res.status(404).json({ success: false, message: 'Booking not found' });
+      }
+  
+      booking.status = status;
+      await booking.save();
+  
+      res.status(200).json({ success: true, status: booking.status });
+    } catch (err) {
+      res.status(500).json({ success: false, message: err.message });
+    }
+  };
+  
