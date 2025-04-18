@@ -232,7 +232,7 @@ exports.redeemCoins = async (req, res, next) => {
 }
 
 // @desc    Redeem coin from code to user's wallet
-// @route   PUT /api/v1/coins/deduct
+// @route   PUT /api/v1/coins/confirm
 // @access  Public
 exports.transferNetRevenue = async (req, res, next) => {
     try {
@@ -250,8 +250,11 @@ exports.transferNetRevenue = async (req, res, next) => {
                 success: false,
                 message: 'Booking not found'
             });
-
-
+        
+        if (booking.status !== 'received') {
+            return res.status(400).json({ message: 'Booking status must be received' });
+        }
+        
         if(booking.user.toString() !== req.user.id && req.user.role !== 'admin') 
             return res.status(401).json({
 
