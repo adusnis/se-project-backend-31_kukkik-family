@@ -252,3 +252,40 @@ exports.updateBookingStatus = async (req, res) => {
     }
   };
   
+
+// @desc    Get renter's booking
+// @route   GET /api/v1/carProviders/:renterId/status
+// @access  Private
+exports.getRenterBooking = async (req, res, next) => {
+    try{
+        const renterId = req.params.renterId;
+
+        const bookings = await Booking.find()
+        .populate({
+            path: 'carProvider',
+            match: { renter: renterId }, 
+            select: 'name'
+        })
+
+        if(!bookings)
+            return res.status(404).json({
+                success: false,
+                message: 'wrong'
+            });
+
+        const filteredBookings = bookings.filter(booking => booking.carProvider !== null);
+
+        res.status(200).json({
+            success: true,
+            count: filteredBookings.length,
+            data: filteredBookings
+        })
+
+    } catch (err) {
+        console.log(err);
+        res.status(500).json({
+            success: false,
+            message: err.message
+        })
+    }
+}

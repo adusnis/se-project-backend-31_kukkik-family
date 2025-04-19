@@ -1,5 +1,5 @@
 const express = require('express');
-const {getBookings, getBooking, addBooking, updateBooking, deleteBooking, updateBookingStatus, getBookingStatus} = require('../controllers/bookings');
+const {getBookings, getBooking, addBooking, updateBooking, deleteBooking, updateBookingStatus, getBookingStatus, getRenterBooking} = require('../controllers/bookings');
 
 const router = express.Router({mergeParams:true});
 
@@ -15,7 +15,8 @@ router.route('/:id')
 router.route('/:id/status')
     .get(protect, authorize('user', 'admin'), getBookingStatus) 
     .patch(protect, authorize('user', 'admin'), updateBookingStatus);
-  
+router.route('/renter/:renterId/rentals')
+    .get(protect, authorize('admin', 'user'), getRenterBooking);
   
 
 module.exports=router;
