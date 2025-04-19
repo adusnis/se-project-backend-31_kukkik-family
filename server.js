@@ -62,6 +62,7 @@ app.use('/api/v1/carProviders', carProviders)
 app.use('/api/v1/auth', auth);
 app.use('/api/v1/bookings', bookings);
 app.use('/api/v1/coins', coins);
+
 //Body parser
 app.use('/api/v1/users', users);
 
