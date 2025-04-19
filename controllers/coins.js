@@ -3,6 +3,8 @@ const User = require('../models/User');
 const QrCode = require('../models/QrCode');
 const Booking = require('../models/Booking');
 const crypto = require('crypto');
+const QRCODE = require('../models/QrCode');
+const status = require('statuses');
 
 // @desc    Get user's coin
 // @route   GET /api/v1/coins
@@ -279,3 +281,31 @@ exports.transferNetRevenue = async (req, res, next) => {
         })
     }
 }
+
+// @desc    get redeem code status
+// @route   GET /api/v1/coins/:code/status
+// @access  Public
+exports.getRedeemStatus = async (req, res, next) => {
+    try {
+        const qrCode = await QRCODE.findOne({ code: req.params.code});
+
+        if(!qrCode)
+            return res.status(404).json({
+                success: false,
+                message: `There's no redeem code with code ${req.params.code}`
+            });
+
+        res.status(200).json({
+            success: true,
+            status: qrCode.status
+        });
+        
+    } catch (err) {
+        console.log(err);
+        res.status(500).json({
+            success: false,
+            message: "Cannot get redeem status",
+            error: err.message
+        })
+    }
+};

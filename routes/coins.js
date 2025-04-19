@@ -1,5 +1,5 @@
 const express = require('express')
-const { getCoins, addCoins, deductCoins, redeemCoins, getQR, transferNetRevenue } = require('../controllers/coins');
+const { getCoins, addCoins, deductCoins, redeemCoins, getQR, transferNetRevenue, getRedeemStatus } = require('../controllers/coins');
 
 const router = express.Router();
 
@@ -11,5 +11,6 @@ router.route('/deduct').put(protect, authorize('admin', 'user', 'renter'), deduc
 router.route('/getQR').post(protect, authorize('admin', 'user', 'renter'), getQR)
 router.route('/confirm').put(protect, authorize('admin', 'user', 'renter'), transferNetRevenue, addCoins)
 router.route('/redeem/:code').get(redeemCoins, addCoins)
+router.route('/redeem/:code/status').get(getRedeemStatus)
 
 module.exports = router;
