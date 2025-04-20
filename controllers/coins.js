@@ -256,7 +256,7 @@ exports.transferNetRevenue = async (req, res, next) => {
         if (booking.status !== 'received') {
             return res.status(400).json({ message: 'Booking status must be received' });
         }
-        
+  
         if(booking.user.toString() !== req.user.id && req.user.role !== 'admin') 
             return res.status(401).json({
 
