@@ -2,6 +2,8 @@ const { message } = require('statuses');
 const Booking = require('../models/Booking');
 const CarProvider = require('../models/CarProvider');
 
+
+
 // @desc    Get all bookings
 // @route   GET /api/v1/bookings
 // @access  Private (User sees their own, Admin sees all)
@@ -9,13 +11,14 @@ exports.getBookings = async (req, res, next) => {
     try {
         let query;
 
-        if (req.user.role !== 'admin') {
+        if (req.user.role == 'user') {
             //allow the registered user to view his/her rental car bookings.
             query = Booking.find({ user: req.user.id }).populate({
                 path: 'carProvider',
                 select: 'name address tel picture'
             });
-        } else {
+        } 
+        else {
             // allow the admin to view any rental car bookings.
             if (req.params.carProviderId) {
                 query = Booking.find({ carProvider: req.params.carProviderId }).populate({
@@ -258,7 +261,7 @@ exports.updateBookingStatus = async (req, res) => {
 // @access  Private
 exports.getRenterBooking = async (req, res, next) => {
     try{
-        const renterId = req.params.renterId;
+        const renterId = req.user.id;
 
         const bookings = await Booking.find()
         .populate({
