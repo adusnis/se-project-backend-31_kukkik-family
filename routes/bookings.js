@@ -16,7 +16,7 @@ router.route('/:id/status')
     .get(protect, authorize('user', 'admin'), getBookingStatus) 
     .patch(protect, authorize('user', 'admin'), updateBookingStatus);
 router.route('/renter/:renterId/rentals')
-    .get(protect, authorize('admin', 'user'), getRenterBooking);
+    .get(protect, authorize('admin', 'renter'), getRenterBooking);
   
 
 module.exports=router;
