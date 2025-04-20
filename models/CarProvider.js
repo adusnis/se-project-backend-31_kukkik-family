@@ -52,6 +52,10 @@ const CarProviderSchema = new mongoose.Schema({
     renter: {
         type: mongoose.Types.ObjectId,
         ref: 'User',
+    },
+    sale: {
+        type: Number,
+        default: 0
     }
 }
 ,{
