@@ -2,7 +2,6 @@ const CarProvider = require('../models/CarProvider');
 const Booking = require('../models/Booking');
 const User = require('../models/User');
 
-
 // @desc Get all car providers
 // @route GET /api/carProviders
 // @access Public
@@ -315,3 +314,33 @@ exports.updateCarStatus = async (req, res) => {
     }
 };
 
+// @desc get top X sales car default to 3
+// @route GET /api/carProviders/top-sales
+// @access Private
+exports.getTopSalesCar = async (req, res, next) => {
+    try {
+        const limit = parseInt(req.query.limit) || 3;
+
+        const topCars = await CarProvider.find({
+            renter: req.user.id
+          })
+          .sort({ sale: -1 })
+          .limit(limit);
+        
+        if (topCars.length === 0) {
+          return res.status(404).json({
+            success: false,
+            message: 'No cars found for this renter.',
+          });
+        }
+    
+        res.status(200).json({
+            success: true,
+            count: topCars.length,
+            data: topCars
+        });
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ success: false, message: err.message });
+    }
+};
