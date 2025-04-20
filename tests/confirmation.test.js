@@ -26,7 +26,8 @@ describe('Transfer coin to renter', () => {
     const mockBooking = {
         _id: '5',
         user: '1',
-        carProvider: mockCarProvider  
+        carProvider: mockCarProvider,
+        status: 'received'
     };
       
 
