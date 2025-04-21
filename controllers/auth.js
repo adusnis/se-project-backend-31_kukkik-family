@@ -8,11 +8,11 @@ const User = require('../models/User'); // Adjust the path if necessary
 
 exports.register = async (req, res, next) => {
     try {
-        const { name, tel, email, password,} = req.body;
+        const { name, tel, email, password, role} = req.body;
         //create user
+        console.log(req.body);
         const user = await User.create({
             ...req.body,
-            role : "user",
             likedCars: []
         });
         //const token=user.getSignedJwtToken(); 
