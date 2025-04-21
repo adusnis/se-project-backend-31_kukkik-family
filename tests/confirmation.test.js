@@ -12,6 +12,7 @@ jest.mock('../models/Booking');
 
 describe('Transfer coin to renter', () => {
     let req, res, next;
+    let mockBooking;
 
     const mockUser = {
         _id: '1', 
@@ -21,18 +22,17 @@ describe('Transfer coin to renter', () => {
 
     const mockCarProvider = {
         dailyrate: 100
-    };
-
-    const mockBooking = {
-        _id: '5',
-        user: '1',
-        carProvider: mockCarProvider,
-        status: 'received'
-    };
-      
+    };      
 
     beforeEach(() => {
         jest.clearAllMocks();
+
+        mockBooking = {
+            _id: '5',
+            user: '1',
+            carProvider: mockCarProvider,
+            status: 'received'
+        };
         
         req = {
             user : {
@@ -119,16 +119,14 @@ describe('Transfer coin to renter', () => {
         });
     })
 
-    test('transfer net revenue should return 400 status if there is no bookingId in request body', async () => {
-        
-        req.body.bookingId = '';
-        
+    test('transfer net revenue should return 400 status if booking status is not received', async () => {
+        mockBooking.status = 'returned';
         await transferNetRevenue(req, res, next);
 
         expect(res.status).toHaveBeenCalledWith(400);
         expect(res.json).toHaveBeenCalledWith({
             success: false,
-            message: 'Invalid or missing booking ID'
+            message: 'Booking status must be received'
         });
     })
 
