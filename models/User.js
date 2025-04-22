@@ -42,6 +42,10 @@ const UserSchema=new mongoose.Schema({
         type:Date,
         default:Date.now
     },
+    picture: {
+        type: String,
+        required: [true, 'Please add a picture']
+    },
     coin: {
         type: Number,
         required: true,
