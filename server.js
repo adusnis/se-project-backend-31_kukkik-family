@@ -51,6 +51,10 @@ app.use(limiter);
 app.use(hpp());
 app.use(cors());
 
+//Allow large JSON/form data (base64 images) up to 20MB
+app.use(express.json({ limit: "20mb" }));
+app.use(express.urlencoded({ extended: true, limit: "20mb" }));
+
 //Route files
 const carProviders = require('./routes/carProviders');
 const auth = require('./routes/auth');

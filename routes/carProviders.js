@@ -8,7 +8,7 @@ const { protect, authorize } = require('../middleware/auth');
 
 router.use('/:carProviderId/bookings/', bookingRouter);
 
-router.route('/').get(getCarProviders).post(protect, authorize('admin'), createCarProvider);
+router.route('/').get(getCarProviders).post(protect, authorize('admin', 'renter'), createCarProvider);
 router.route('/top-sales').get(protect, authorize('admin', 'renter'), getTopSalesCar);
 router.route('/:id').get(getCarProvider).put(protect, authorize('admin'), updateCarProvider).delete(protect, authorize('admin'), deleteCarProvider);
 router.route('/:id/like').post(protect, authorize('user', 'admin'), likeCarProvider);

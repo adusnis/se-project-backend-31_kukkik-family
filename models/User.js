@@ -29,7 +29,7 @@ const UserSchema=new mongoose.Schema({
     },
     role:{
         type:String,
-        enum:['user','admin', 'renter'],
+        enum:['user','admin', 'renter', 'pending-renter'],
         default:'user'
     },
     resetPasswordToken: String,
@@ -41,6 +41,14 @@ const UserSchema=new mongoose.Schema({
     createAt:{
         type:Date,
         default:Date.now
+    },
+    picture: {
+        type: String,
+        required: [true, 'Please add a picture']
+    },
+    pictureIdCard: {
+        type: String,
+        required: false
     },
     coin: {
         type: Number,
