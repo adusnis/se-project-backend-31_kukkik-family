@@ -42,15 +42,11 @@ const UserSchema=new mongoose.Schema({
         type:Date,
         default:Date.now
     },
-    picture: {
+    selfiePicture: {
         type: String,
-        required: [true, 'Please add a selfie picture']
+        required: false
     },
-    idcard: {
-        type: String,
-        required: [true, 'Please add an idcard picture']
-    },
-    pictureIdCard: {
+    IdCardPicture: {
         type: String,
         required: false
     },
