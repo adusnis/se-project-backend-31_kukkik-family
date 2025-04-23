@@ -44,13 +44,26 @@ describe(`Get all renter's booking`, () => {
         await getRenterBooking(req, res);
 
         expect(res.status).toHaveBeenCalledWith(200);
+        expect(res.json).toHaveBeenCalledWith({
+            success: true,
+            count: mockBooking.count,
+            data: mockBooking
+        });
     });
 
     test('Get all renter should return empty data if the renter does not have any booking', async () => {
         mockBooking.carProvider = {};
+        Booking.find = jest.fn().mockReturnValue({
+            populate: jest.fn().mockResolvedValue(null)
+        });
 
         await getRenterBooking(req, res);
 
         expect(res.status).toHaveBeenCalledWith(200);
+        expect(res.json).toHaveBeenCalledWith({
+            success: true,
+            message: 'this renter does not have any booking',
+            data: []
+        });
     });
 });
