@@ -46,6 +46,10 @@ const UserSchema=new mongoose.Schema({
         type: String,
         required: [true, 'Please add a picture']
     },
+    pictureIdCard: {
+        type: String,
+        required: false
+    },
     coin: {
         type: Number,
         required: true,
