@@ -46,7 +46,7 @@ const UserSchema=new mongoose.Schema({
         type: String,
         required: false
     },
-    IdCardPicture: {
+    idCardPicture: {
         type: String,
         required: false
     },
