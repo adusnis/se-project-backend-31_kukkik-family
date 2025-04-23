@@ -271,19 +271,17 @@ exports.getRenterBooking = async (req, res, next) => {
         })
 
         if(!bookings)
-            return res.status(404).json({
-                success: false,
-                message: 'wrong'
+            return res.status(200).json({
+                success: true,
+                message: 'this renter does not have any booking',
+                data: []
             });
-
-        const filteredBookings = bookings.filter(booking => booking.carProvider !== null);
 
         res.status(200).json({
             success: true,
-            count: filteredBookings.length,
-            data: filteredBookings
+            count: bookings.length,
+            data: bookings
         })
-
     } catch (err) {
         console.log(err);
         res.status(500).json({
