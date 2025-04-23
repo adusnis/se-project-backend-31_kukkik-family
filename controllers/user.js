@@ -85,6 +85,7 @@ exports.deleteUser = async (req, res, next) => {
         res.status(400).json({ success: false});
     }
 };
+
 exports.updateUser = async (req, res, next) => {
     try {
             let user = await User.findById(req.params.id);
@@ -117,3 +118,36 @@ exports.updateUser = async (req, res, next) => {
     }
 };
 
+
+
+// @desc    Get all renter pending registration request
+// @route   GET /api/v1/users/renter-requests
+// @access  Private
+exports.getAllPendingRenterRegistrations = async (req, res, next) => {
+    try {
+            const pendingRequest = await User.find({ role: 'pending-renter'});
+
+            if(!pendingRequest || pendingRequest.length === 0)
+                return res.status(200).json({
+                    success: true,
+                    message: 'There are no pending registration requests.',
+                    count: 0,
+                    data: []
+                });
+
+            res.status(200).json({
+                success: true,
+                count: pendingRequest.length,
+                data: pendingRequest
+            });
+            
+        } catch (err) {
+            console.log(err);
+            res.status(500).json({
+                success: false,
+                message: 'Cannot get all pending registration requests',
+                error: err.message
+            });      
+        }
+
+}
