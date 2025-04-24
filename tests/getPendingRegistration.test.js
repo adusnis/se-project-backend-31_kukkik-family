@@ -56,4 +56,18 @@ describe('Get pending registration request scenario', () => {
         });
     })
 
+    test('Get all pending registration should return status 500 if got any error', async () => {
+        const mockError = new Error('Database failure');
+        User.find.mockRejectedValue(mockError);
+        
+        await getAllPendingRenterRegistrations(req, res);
+
+        expect(res.status).toHaveBeenCalledWith(500);
+        expect(res.json).toHaveBeenCalledWith({
+            success: false,
+            message: 'Cannot get all pending registration requests',
+            error: mockError.message
+        });
+    })
+
 });
