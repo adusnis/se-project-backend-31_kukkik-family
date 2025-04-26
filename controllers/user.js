@@ -93,7 +93,7 @@ exports.updateUser = async (req, res, next) => {
             if (!user) {
                 return res.status(400).json({ success: false });
             }
-            if(req.user.role == 'user')
+        if (req.user.role =! "admin")
             {
                 if(req.params.id != req.user.id){
                     return res.status(400).json({
