@@ -8,6 +8,8 @@ const {protect, authorize} = require('../middleware/auth');
 router.route('/')
     .get(protect, authorize('admin', 'user'), getBookings)
     .post(protect, authorize('admin', 'user'), addBooking);
+router.route('/renter/:renterId/rentals')
+    .get(protect, authorize('admin', 'renter'), getRenterBooking);  
 router.route('/:id')
     .get(protect, getBooking)
     .put(protect, authorize('admin', 'user'),updateBooking)
@@ -15,9 +17,7 @@ router.route('/:id')
 router.route('/:id/status')
     .get(protect, authorize('user', 'admin'), getBookingStatus) 
     .patch(protect, authorize('user', 'admin'), updateBookingStatus);
-router.route('/renter/rentals')
-    .get(protect, authorize('admin', 'renter'), getRenterBooking);
-  
+
 
 module.exports=router;
 
