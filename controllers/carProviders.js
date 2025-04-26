@@ -366,6 +366,9 @@ exports.getAllRenterCars = async (req, res, next) => {
 
         res.status(200).json({
             success: true,
+            name: user.name,
+            email: user.email,
+            tel: user.tel,
             count: user.rentalCars.length,
             data: user.rentalCars
         })
