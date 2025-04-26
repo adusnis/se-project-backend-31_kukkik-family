@@ -1,6 +1,7 @@
 const { message } = require('statuses');
 const Booking = require('../models/Booking');
 const CarProvider = require('../models/CarProvider');
+const User = require('../models/User');
 
 
 
@@ -263,6 +264,8 @@ exports.getRenterBooking = async (req, res, next) => {
     try{
         const renterId = req.user.id;
 
+        const renter = await User.findById(renterId);
+
         const bookings = await Booking.find()
         .populate({
             path: 'carProvider',
@@ -270,10 +273,16 @@ exports.getRenterBooking = async (req, res, next) => {
             select: 'name'
         })
 
+        if(!renter)
+            return res.status(404).json({
+                success: false,
+                message: 'Renter not found'
+            })
+
         if(!bookings)
             return res.status(200).json({
                 success: true,
-                message: 'this renter does not have any booking',
+                message: 'This renter does not have any booking',
                 data: []
             });
 
