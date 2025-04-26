@@ -262,7 +262,7 @@ exports.updateBookingStatus = async (req, res) => {
 // @access  Private
 exports.getRenterBooking = async (req, res, next) => {
     try{
-        const renterId = req.params.renterId;
+        const renterId = req.user.id;
 
         const renter = await User.findById(renterId);
 
