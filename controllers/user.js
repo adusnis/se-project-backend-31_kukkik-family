@@ -178,6 +178,14 @@ exports.updatePendingRenterRegistration = async (req, res, next) => {
                     success: false,
                     message: 'User is not in a pending state for registration'
                 })
+            
+            if(action === 'deny'){
+                await User.findByIdAndDelete(req.params.id);
+                return res.status(200).json({
+                    success: true,
+                    message: 'Registration request denied successfully'
+                });
+            }
 
             user = await User.findByIdAndUpdate(req.params.id, {
                 role: 'renter'
@@ -188,6 +196,7 @@ exports.updatePendingRenterRegistration = async (req, res, next) => {
             
             res.status(200).json({
                 success: true,
+                message: 'Registration request accept successfully',
                 data: user
             });
     } catch (err) {
