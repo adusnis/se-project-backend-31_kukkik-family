@@ -140,6 +140,11 @@ exports.createCarProvider = async (req, res, next) => {
         like: 0,
         renter: req.user.id
     });
+
+    await User.findByIdAndUpdate(req.user.id, {
+        $push: { rentalCars: carProvider._id }
+    });
+    
     res.status(201).json({
         success: true,
         data: carProvider
