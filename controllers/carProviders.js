@@ -345,3 +345,35 @@ exports.getTopSalesCar = async (req, res, next) => {
         res.status(500).json({ success: false, message: err.message });
     }
 };
+
+// @desc get rernter's all cars
+// @route GET /api/carProviders/renter/:renterId
+// @access Public
+exports.getAllRenterCars = async (req, res, next) => {
+    try {
+        const renterId = req.params.renterId;
+
+        const user = await User.findById(renterId)
+            .populate({
+                path: 'rentalCars'
+            })
+        
+        if(!user)
+            return res.status(404).json({
+                success: false,
+                message: 'Renter not found'
+            });
+
+        res.status(200).json({
+            success: true,
+            count: user.rentalCars.length,
+            data: user.rentalCars
+        })
+    } catch(err) {
+        console.log(err);
+        res.status(500).json({
+            success: false,
+            message: err.message
+        });
+    }
+}
