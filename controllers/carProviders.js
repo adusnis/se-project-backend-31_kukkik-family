@@ -134,10 +134,11 @@ exports.getCarProvider = async (req, res, next) => {
 // @route POST /api/carProviders/
 // @access Private
 exports.createCarProvider = async (req, res, next) => {
-    
+
     const carProvider = await CarProvider.create({
         ...req.body,
-        like: 0
+        like: 0,
+        renter: req.user.id
     });
     res.status(201).json({
         success: true,
