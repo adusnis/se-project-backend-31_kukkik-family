@@ -85,6 +85,7 @@ exports.deleteUser = async (req, res, next) => {
         res.status(400).json({ success: false});
     }
 };
+
 exports.updateUser = async (req, res, next) => {
     try {
             let user = await User.findById(req.params.id);
@@ -92,7 +93,7 @@ exports.updateUser = async (req, res, next) => {
             if (!user) {
                 return res.status(400).json({ success: false });
             }
-            if(req.user.role == 'user')
+        if (req.user.role =! "admin")
             {
                 if(req.params.id != req.user.id){
                     return res.status(400).json({
@@ -117,3 +118,84 @@ exports.updateUser = async (req, res, next) => {
     }
 };
 
+
+
+// @desc    Get all renter pending registration request
+// @route   GET /api/v1/users/renter-requests
+// @access  Private
+exports.getAllPendingRenterRegistrations = async (req, res, next) => {
+    try {
+            const pendingRequest = await User.find({ role: 'pending-renter'});
+
+            if(!pendingRequest || pendingRequest.length === 0)
+                return res.status(200).json({
+                    success: true,
+                    message: 'There are no pending registration requests.',
+                    count: 0,
+                    data: []
+                });
+
+            res.status(200).json({
+                success: true,
+                count: pendingRequest.length,
+                data: pendingRequest
+            });
+            
+        } catch (err) {
+            console.log(err);
+            res.status(500).json({
+                success: false,
+                message: 'Cannot get all pending registration requests',
+                error: err.message
+            });      
+        }
+
+}
+
+// @desc    Update renter pending registration request
+// @route   PUT /api/v1/users/renter-requests/:id
+// @access  Private
+exports.updatePendingRenterRegistration = async (req, res, next) => {
+    try {   
+            const { action } = req.body;
+            let user = await User.findById(req.params.id);
+
+            if (!["accept", "deny"].includes(action)) {
+                return res.status(400).json({
+                  success: false,
+                  message: "Invalid action. Must be 'accept' or 'deny'"
+                });
+              }
+            
+            if(!user)
+                return res.status(404).json({
+                    success: false,
+                    message: 'Renter not found'
+                });
+            
+            if(user.role !== 'pending-renter')
+                return res.status(400).json({
+                    success: false,
+                    message: 'User is not in a pending state for registration'
+                })
+
+            user = await User.findByIdAndUpdate(req.params.id, {
+                role: 'renter'
+            }, {
+                new: true,
+                runValidators: true
+            });
+            
+            res.status(200).json({
+                success: true,
+                data: user
+            });
+    } catch (err) {
+        console.log(err);
+        res.status(500).json({
+            success: false,
+            message: 'Cannot update pending registration status',
+            error: err.message
+        });
+    }
+}
