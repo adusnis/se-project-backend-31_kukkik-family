@@ -82,11 +82,17 @@ exports.addBooking = async (req, res, next) => {
         req.body.carProvider = req.params.carProviderId;
 
         const carProvider = await CarProvider.findById(req.params.carProviderId);
+        const user = await User.findById(req.user.id);
 
         if (!carProvider) {
             return res.status(404).json({ success: false, message: `No car provider with ID ${req.params.carProviderId}` });
         }
 
+        if(carProvider.dailyrate > user.coin)
+            return res.status(400).json({
+                success: false,
+                message: `You do not have enough coins to book this car`
+            });
 
         //add user Id to req.body
         req.body.user = req.user.id;
@@ -106,6 +112,13 @@ exports.addBooking = async (req, res, next) => {
          // Create booking
         const booking = await Booking.create(req.body);
 
+        await User.findByIdAndUpdate(req.user.id, {
+            $inc: { coin: -carProvider.dailyrate }, 
+         }, {
+             new: true,
+             runValidators: true
+         });
+
         // Update car status to "rented"
         await CarProvider.findByIdAndUpdate(req.params.carProviderId, {
             status: 'rented'
@@ -115,6 +128,7 @@ exports.addBooking = async (req, res, next) => {
             success: true,
             data: booking
         });
+
     } catch (error) {
         console.log(error);
         return res.status(500).json({ success: false, message: "Cannot create Booking" });
