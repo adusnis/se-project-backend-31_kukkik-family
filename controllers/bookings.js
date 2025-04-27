@@ -87,13 +87,6 @@ exports.addBooking = async (req, res, next) => {
             return res.status(404).json({ success: false, message: `No car provider with ID ${req.params.carProviderId}` });
         }
 
-        // Check if car is available before booking
-        if (carProvider.status !== 'available') {
-            return res.status(400).json({
-                success: false,
-                message: `Car with ID ${req.params.carProviderId} is not available for booking`
-            });
-        }
 
         //add user Id to req.body
         req.body.user = req.user.id;
