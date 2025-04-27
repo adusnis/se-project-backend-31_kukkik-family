@@ -4,6 +4,7 @@ const {getBookings, getBooking, addBooking, updateBooking, deleteBooking, update
 const router = express.Router({mergeParams:true});
 
 const {protect, authorize} = require('../middleware/auth');
+const { deductCoins } = require('../controllers/coins');
 
 router.route('/')
     .get(protect, authorize('admin', 'user'), getBookings)
