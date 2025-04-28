@@ -15,6 +15,6 @@ router.route('/renter-requests/:id')
 router.route('/:id')
     .get(protect,authorize('admin'), getUser)
     .delete(protect,authorize('admin','user'), deleteUser)
-    .put(protect,authorize('admin','user'), updateUser)
+    .put(protect,authorize('admin','renter'), updateUser)
 
 module.exports = router;
