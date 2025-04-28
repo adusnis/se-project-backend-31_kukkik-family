@@ -99,7 +99,10 @@ exports.addBooking = async (req, res, next) => {
         
 
         //Check if existed appointment
-        const existingBookings = await Booking.find({ user: req.user.id });
+        const existingBookings = await Booking.find({
+            user: req.user.id,
+            status: { $ne: 'returned' }
+        });
 
         //If the user is not an admin, they can only create 3 appointments
         if (existingBookings.length >= 3 && req.user.role !== 'admin') {
