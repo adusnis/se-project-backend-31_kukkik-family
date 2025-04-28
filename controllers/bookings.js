@@ -253,6 +253,16 @@ exports.updateBookingStatus = async (req, res) => {
       if (!booking) {
         return res.status(404).json({ success: false, message: 'Booking not found' });
       }
+
+      if(booking.status === 'returned') {
+        await CarProvider.findByIdAndUpdate(booking.carProvider, {
+            $inc: { sale: 1 }
+        },
+        {
+            new: true,
+            runValidators: true
+        })
+      }
   
       booking.status = status;
       await booking.save();
