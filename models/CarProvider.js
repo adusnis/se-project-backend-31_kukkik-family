@@ -72,3 +72,59 @@ CarProviderSchema.virtual('booking',{
     justOne:false
 })
 module.exports = mongoose.model('CarProvider', CarProviderSchema);
+
+/**
+ * @swagger
+ * components:
+ *   securitySchemes:
+ *     bearerAuth:
+ *       type: http
+ *       scheme: bearer
+ *       bearerFormat: JWT
+ *   schemas:
+ *     CarProvider:
+ *       type: object
+ *       properties:
+ *         name:
+ *           type: string
+ *           maxLength: 50
+ *         address:
+ *           type: string
+ *         district:
+ *           type: string
+ *         province:
+ *           type: string
+ *         postalcode:
+ *           type: string
+ *           maxLength: 5
+ *         tel:
+ *           type: string
+ *           minLength: 3
+ *           maxLength: 15
+ *         picture:
+ *           type: string
+ *         dailyrate:
+ *           type: number
+ *         seat:
+ *           type: number
+ *           minimum: 1
+ *         like:
+ *           type: number
+ *           default: 0
+ *         renter:
+ *           type: string
+ *           format: objectId
+ *         sale:
+ *           type: number
+ *           default: 0
+ *       required:
+ *         - name
+ *         - address
+ *         - district
+ *         - province
+ *         - postalcode
+ *         - tel
+ *         - picture
+ *         - dailyrate
+ *         - seat
+ */

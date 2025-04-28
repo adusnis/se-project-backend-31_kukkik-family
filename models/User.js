@@ -95,3 +95,40 @@ UserSchema.set('toJSON', { virtuals: true });
 UserSchema.set('toObject', { virtuals: true });
 
 module.exports = mongoose.model('User', UserSchema);
+/**
+ * @swagger
+ * components:
+ *   schemas:
+ *     User:
+ *       type: object
+ *       properties:
+ *         name:
+ *           type: string
+ *         tel:
+ *           type: string
+ *           minLength: 3
+ *           maxLength: 15
+ *         email:
+ *           type: string
+ *           format: email
+ *         password:
+ *           type: string
+ *           minLength: 6
+ *         role:
+ *           type: string
+ *           enum: [user, admin, renter, pending-renter]
+ *           default: user
+ *         selfiePicture:
+ *           type: string
+ *         idCardPicture:
+ *           type: string
+ *         coin:
+ *           type: number
+ *           minimum: 0
+ *           default: 0
+ *       required:
+ *         - name
+ *         - tel
+ *         - email
+ *         - password
+ */

@@ -9,6 +9,7 @@ const rateLimit = require('express-rate-limit');
 const swaggerJsDoc = require('swagger-jsdoc');
 const swaggerUI = require('swagger-ui-express');
 const PORT = process.env.PORT || 5000;
+dotenv.config({ path: './config/config.env' });
 
 const swaggerOptions = {
     swaggerDefinition: {
@@ -25,13 +26,12 @@ const swaggerOptions = {
                 }
             ],
     },
-    apis: ['./routes/*.js'],
+    apis: ['./routes/*.js', './models/*.js']
 };
 const swaggerDocs = swaggerJsDoc(swaggerOptions);
 const hpp = require('hpp');
 const cors = require('cors');
 //Load env vars
-dotenv.config({ path: './config/config.env' });
 
 //Connect to database
 connectDB();
@@ -61,7 +61,8 @@ const auth = require('./routes/auth');
 const bookings = require('./routes/bookings')
 const coins = require('./routes/coins')
 //Mount routers
-const users = require('./routes/user')
+const users = require('./routes/user');
+const { schema } = require('./models/CarProvider');
 app.use('/api/v1/carProviders', carProviders)
 app.use('/api/v1/auth', auth);
 app.use('/api/v1/bookings', bookings);
