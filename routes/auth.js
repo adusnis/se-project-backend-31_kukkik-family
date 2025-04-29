@@ -37,6 +37,16 @@ module.exports=router;
  *                   type: boolean
  *                 token:
  *                   type: string
+ *                 email:
+ *                   type: string
+ *                 user_id:
+ *                   type: string
+ *                 name:
+ *                   type: string
+ *                 role:
+ *                   type: string
+ *                 tel:
+ *                   type: string
  */
 
 /**
@@ -72,6 +82,16 @@ module.exports=router;
  *                   type: boolean
  *                 token:
  *                   type: string
+ *                 email:
+ *                   type: string
+ *                 user_id:
+ *                   type: string
+ *                 name:
+ *                   type: string
+ *                 role:
+ *                   type: string
+ *                 tel:
+ *                   type: string
  */
 
 /**
@@ -93,7 +113,49 @@ module.exports=router;
  *                 success:
  *                   type: boolean
  *                 data:
- *                   $ref: '#/components/schemas/User'
+ *                   type: object
+ *                   properties:
+ *                     _id:
+ *                       type: string
+ *                       example: "680fd2e7372f68a45855b2da"
+ *                     name:
+ *                       type: string
+ *                       example: "000001"
+ *                     tel:
+ *                       type: string
+ *                       example: "000001"
+ *                     email:
+ *                       type: string
+ *                       example: "000001@example.com"
+ *                     role:
+ *                       type: string
+ *                       example: "user"
+ *                     likedCars:
+ *                       type: array
+ *                       items:
+ *                         type: string
+ *                       example: []
+ *                     selfiePicture:
+ *                       type: string
+ *                       example: "string"
+ *                     coin:
+ *                       type: integer
+ *                       example: 0
+ *                     rentalCars:
+ *                       type: array
+ *                       items:
+ *                         type: string
+ *                       example: []
+ *                     createAt:
+ *                       type: string
+ *                       format: date-time
+ *                       example: "2025-04-28T19:11:35.630Z"
+ *                     __v:
+ *                       type: integer
+ *                       example: 0
+ *                     id:
+ *                       type: string
+ *                       example: "680fd2e7372f68a45855b2da"
  */
 
 /**
@@ -114,6 +176,4 @@ module.exports=router;
  *               properties:
  *                 success:
  *                   type: boolean
- *                 message:
- *                   type: string
  */
