@@ -42,3 +42,33 @@ BookingSchema.pre('validate', function (next) {
 BookingSchema.index({ carProvider: 1, startDate: 1, endDate: 1 });
 
 module.exports = mongoose.model('Booking', BookingSchema);
+
+/**
+ * @swagger
+ * components:
+ *   schemas:
+ *     Booking:
+ *       type: object
+ *       properties:
+ *         startDate:
+ *           type: string
+ *           format: date-time
+ *         endDate:
+ *           type: string
+ *           format: date-time
+ *         user:
+ *           type: string
+ *           format: objectId
+ *         carProvider:
+ *           type: string
+ *           format: objectId
+ *         status:
+ *           type: string
+ *           enum: [rented, received, returned]
+ *           default: rented
+ *       required:
+ *         - startDate
+ *         - endDate
+ *         - user
+ *         - carProvider
+ */

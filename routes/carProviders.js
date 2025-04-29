@@ -20,163 +20,324 @@ router.route('/:id/like').post(protect, authorize('user', 'admin'), likeCarProvi
 module.exports = router;
 
 /**
-* @swagger
-* components:
-*   schemas:
-*     CarProvider:
-*       type: object
-*       required:
-*         - name
-*         - address
-*         - tel
-*       properties:
-*         name:
-*           type: string
-*           description: Car provider name
-*         address:
-*           type: string
-*           description: House No., Street, Road
-*         district:
-*           type: string
-*           description: District
-*         province:
-*           type: string
-*           description: Province
-*         postalcode:
-*           type: string
-*           description: 5-digit postal code
-*         tel:
-*           type: string
-*           description: Telephone number
-*       example:
-*         name: Happy Car Provider
-*         address: 121 ถ.สุขุมวิท
-*         district: บางนา
-*         province: กรุงเทพมหานคร
-*         postalcode: 10110
-*         tel: 02-2187000
-*/
+ * @swagger
+ * /carProviders:
+ *   get:
+ *     tags: [Car Providers]
+ *     summary: Get all car providers
+ *     parameters:
+ *       - in: query
+ *         name: relevance
+ *         schema:
+ *           type: string
+ *         description: Search term for relevance-based sorting
+ *       - in: query
+ *         name: province
+ *         schema:
+ *           type: string
+ *       - in: query
+ *         name: minprice
+ *         schema:
+ *           type: number
+ *       - in: query
+ *         name: maxprice
+ *         schema:
+ *           type: number
+ *       - in: query
+ *         name: minseat
+ *         schema:
+ *           type: number
+ *       - in: query
+ *         name: maxseat
+ *         schema:
+ *           type: number
+ *       - in: query
+ *         name: page
+ *         schema:
+ *           type: integer
+ *           default: 1
+ *       - in: query
+ *         name: limit
+ *         schema:
+ *           type: integer
+ *           default: 25
+ *     responses:
+ *       200:
+ *         description: Successful operation
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                 count:
+ *                   type: integer
+ *                 pagination:
+ *                   type: object
+ *                 data:
+ *                   type: array
+ *                   items:
+ *                     $ref: '#/components/schemas/CarProvider'
+ */
 
 /**
-* @swagger
-* tags:
-*   name: CarProviders
-*   description: The car providers managing API
-*/
+ * @swagger
+ * /carProviders:
+ *   post:
+ *     tags: [Car Providers]
+ *     summary: Create a new car provider
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/CarProvider'
+ *     responses:
+ *       201:
+ *         description: Car provider created successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                 data:
+ *                   $ref: '#/components/schemas/CarProvider'
+ */
 
 /**
-* @swagger
-* /carProviders:
-*   get:
-*     summary: Returns the list of all the car providers
-*     tags: [CarProviders]
-*     responses:
-*       200:
-*         description: The list of the car providers
-*         content:
-*           application/json:
-*             schema:
-*               type: array
-*               items:
-*                 $ref: '#/components/schemas/CarProvider'
-*/
+ * @swagger
+ * /carProviders/top-sales:
+ *   get:
+ *     tags: [Car Providers]
+ *     summary: Get top sales cars
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: query
+ *         name: limit
+ *         schema:
+ *           type: integer
+ *           default: 3
+ *     responses:
+ *       200:
+ *         description: Successful operation
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                 count:
+ *                   type: integer
+ *                 data:
+ *                   type: array
+ *                   items:
+ *                     $ref: '#/components/schemas/CarProvider'
+ */
 
 /**
-* @swagger
-* /carProviders/{id}:
-*   get:
-*     summary: Get the car provider by id
-*     tags: [CarProviders]
-*     parameters:
-*       - in: path
-*         name: id
-*         schema:
-*           type: string
-*         required: true
-*         description: The car provider id
-*     responses:
-*       200:
-*         description: The car provider description by id
-*         content:
-*           application/json:
-*             schema:
-*               $ref: '#/components/schemas/CarProvider'
-*       404:
-*         description: The car provider was not found
-*/
+ * @swagger
+ * /carProviders/renter/{renterId}:
+ *   get:
+ *     tags: [Car Providers]
+ *     summary: Get all cars of a renter
+ *     parameters:
+ *       - in: path
+ *         name: renterId
+ *         required: true
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: Successful operation
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                 name:
+ *                   type: string
+ *                 email:
+ *                   type: string
+ *                 tel:
+ *                   type: string
+ *                 count:
+ *                   type: integer
+ *                 data:
+ *                   type: array
+ *                   items:
+ *                     $ref: '#/components/schemas/CarProvider'
+ */
 
 /**
-* @swagger
-* /carProviders:
-*   post:
-*     summary: Create a new car provider
-*     tags: [CarProviders]
-*     requestBody:
-*       required: true
-*       content:
-*         application/json:
-*           schema:
-*             $ref: '#/components/schemas/CarProvider'
-*     responses:
-*       201:
-*         description: The car provider was successfully created
-*         content:
-*           application/json:
-*             schema:
-*               $ref: '#/components/schemas/CarProvider'
-*       500:
-*         description: Some server error
-*/
+ * @swagger
+ * /carProviders/{id}:
+ *   get:
+ *     tags: [Car Providers]
+ *     summary: Get a car provider by ID
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: Successful operation
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                 data:
+ *                   $ref: '#/components/schemas/CarProvider'
+ */
 
 /**
-* @swagger
-* /carProviders/{id}:
-*   put:
-*     summary: Update the car provider by the id
-*     tags: [CarProviders]
-*     parameters:
-*       - in: path
-*         name: id
-*         schema:
-*           type: string
-*         required: true
-*         description: The car provider id
-*     requestBody:
-*       required: true
-*       content:
-*         application/json:
-*           schema:
-*             $ref: '#/components/schemas/CarProvider'
-*     responses:
-*       200:
-*         description: The car provider was updated
-*         content:
-*           application/json:
-*             schema:
-*               $ref: '#/components/schemas/CarProvider'
-*       404:
-*         description: The car provider was not found
-*       500:
-*         description: Some error happened
-*/
+ * @swagger
+ * /carProviders/{id}:
+ *   put:
+ *     tags: [Car Providers]
+ *     summary: Update a car provider
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/CarProvider'
+ *     responses:
+ *       200:
+ *         description: Car provider updated successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                 data:
+ *                   $ref: '#/components/schemas/CarProvider'
+ */
 
 /**
-* @swagger
-* /carProviders/{id}:
-*   delete:
-*     summary: Remove the car provider by id
-*     tags: [CarProviders]
-*     parameters:
-*       - in: path
-*         name: id
-*         schema:
-*           type: string
-*         required: true
-*         description: The car provider id
-*
-*     responses:
-*       200:
-*         description: The car provider was deleted
-*       404:
-*         description: The car provider was not found
-*/
+ * @swagger
+ * /carProviders/{id}:
+ *   delete:
+ *     tags: [Car Providers]
+ *     summary: Delete a car provider
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: Car provider deleted successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                 data:
+ *                   type: object
+ */
+
+/**
+ * @swagger
+ * /carProviders/{id}/like:
+ *   post:
+ *     tags: [Car Providers]
+ *     summary: Like a car provider
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: Car liked successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                 data:
+ *                   type: object
+ *                   properties:
+ *                     carProvider:
+ *                       $ref: '#/components/schemas/CarProvider'
+ *                     message:
+ *                       type: string
+ */
+
+/**
+ * @swagger
+ * /carProviders/{carProviderId}/bookings:
+ *   post:
+ *     tags: [Bookings]
+ *     summary: Add a new booking
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: carProviderId
+ *         required: true
+ *         schema:
+ *           type: string
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               startDate:
+ *                 type: string
+ *                 format: date-time
+ *               endDate:
+ *                 type: string
+ *                 format: date-time
+ *             required:
+ *               - startDate
+ *               - endDate
+ *     responses:
+ *       201:
+ *         description: Booking created successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                 data:
+ *                   $ref: '#/components/schemas/Booking'
+ */
