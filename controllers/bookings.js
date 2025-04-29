@@ -253,12 +253,12 @@ exports.updateBookingStatus = async (req, res) => {
     }
   
     try {
-      const booking = await Booking.findById(req.params.id);
+      const booking = await Booking.findById(req.params.id).populate('carProvider');
       if (!booking) {
         return res.status(404).json({ success: false, message: 'Booking not found' });
       }
 
-      if(booking.status === 'returned') {
+      if(status === 'returned') {
         await CarProvider.findByIdAndUpdate(booking.carProvider, {
             $inc: { sale: 1 }
         },
@@ -266,6 +266,20 @@ exports.updateBookingStatus = async (req, res) => {
             new: true,
             runValidators: true
         })
+      }
+
+    //   const PLATFORM_FEE = 10;
+    //   const price = booking.carProvider.dailyrate;
+    //   const netAmount = (price * (100 - PLATFORM_FEE) / 100) + 10 ; // calculate net revenue here
+      
+      const PLATFORM_FEE = 10;
+      const price = booking.carProvider.dailyrate;
+      const netAmount = (price * (100 - PLATFORM_FEE) / 100) + 10 ;
+
+      if(status === 'received') {
+        await User.findByIdAndUpdate(booking.carProvider.renter, {
+            $inc: { coin: netAmount }
+        }) 
       }
   
       booking.status = status;
