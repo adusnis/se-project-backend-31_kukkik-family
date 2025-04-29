@@ -301,7 +301,7 @@ exports.getRenterBooking = async (req, res, next) => {
             },
             {
                 $match: {
-                    'carProvider': renterId
+                    'carProvider.renter' : renterId
                 }
             }
         ]);
