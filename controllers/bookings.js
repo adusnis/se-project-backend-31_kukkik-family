@@ -2,6 +2,7 @@ const { message } = require('statuses');
 const Booking = require('../models/Booking');
 const CarProvider = require('../models/CarProvider');
 const User = require('../models/User');
+const { default: mongoose } = require('mongoose');
 
 
 
@@ -99,7 +100,10 @@ exports.addBooking = async (req, res, next) => {
         
 
         //Check if existed appointment
-        const existingBookings = await Booking.find({ user: req.user.id });
+        const existingBookings = await Booking.find({
+            user: req.user.id,
+            status: { $ne: 'returned' }
+        });
 
         //If the user is not an admin, they can only create 3 appointments
         if (existingBookings.length >= 3 && req.user.role !== 'admin') {
@@ -253,6 +257,16 @@ exports.updateBookingStatus = async (req, res) => {
       if (!booking) {
         return res.status(404).json({ success: false, message: 'Booking not found' });
       }
+
+      if(booking.status === 'returned') {
+        await CarProvider.findByIdAndUpdate(booking.carProvider, {
+            $inc: { sale: 1 }
+        },
+        {
+            new: true,
+            runValidators: true
+        })
+      }
   
       booking.status = status;
       await booking.save();
@@ -265,7 +279,7 @@ exports.updateBookingStatus = async (req, res) => {
   
 
 // @desc    Get renter's booking
-// @route   GET /api/v1/carProviders/:renterId/status
+// @route   GET /api/v1/booking/renter/rentals
 // @access  Private
 exports.getRenterBooking = async (req, res, next) => {
     try{
@@ -273,12 +287,24 @@ exports.getRenterBooking = async (req, res, next) => {
 
         const renter = await User.findById(renterId);
 
-        const bookings = await Booking.find()
-        .populate({
-            path: 'carProvider',
-            match: { renter: renterId }, 
-            select: 'name'
-        })
+        const bookings = await Booking.aggregate([
+            {
+                $lookup: {
+                    from: 'carproviders', // collection name (lowercase, pluralized)
+                    localField: 'carProvider',
+                    foreignField: '_id',
+                    as: 'carProvider'
+                }
+            },
+            {
+                $unwind: '$carProvider'
+            },
+            {
+                $match: {
+                    'carProvider': renterId
+                }
+            }
+        ]);
 
         if(!renter)
             return res.status(404).json({
