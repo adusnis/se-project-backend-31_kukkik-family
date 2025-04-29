@@ -2,6 +2,7 @@ const { message } = require('statuses');
 const Booking = require('../models/Booking');
 const CarProvider = require('../models/CarProvider');
 const User = require('../models/User');
+const { default: mongoose } = require('mongoose');
 
 
 
@@ -278,7 +279,7 @@ exports.updateBookingStatus = async (req, res) => {
   
 
 // @desc    Get renter's booking
-// @route   GET /api/v1/carProviders/:renterId/status
+// @route   GET /api/v1/booking/renter/rentals
 // @access  Private
 exports.getRenterBooking = async (req, res, next) => {
     try{
@@ -286,12 +287,24 @@ exports.getRenterBooking = async (req, res, next) => {
 
         const renter = await User.findById(renterId);
 
-        const bookings = await Booking.find()
-        .populate({
-            path: 'carProvider',
-            match: { renter: renterId }, 
-            select: 'name'
-        })
+        const bookings = await Booking.aggregate([
+            {
+                $lookup: {
+                    from: 'carproviders', // collection name (lowercase, pluralized)
+                    localField: 'carProvider',
+                    foreignField: '_id',
+                    as: 'carProvider'
+                }
+            },
+            {
+                $unwind: '$carProvider'
+            },
+            {
+                $match: {
+                    'carProvider': renterId
+                }
+            }
+        ]);
 
         if(!renter)
             return res.status(404).json({
