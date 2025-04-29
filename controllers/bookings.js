@@ -258,7 +258,7 @@ exports.updateBookingStatus = async (req, res) => {
         return res.status(404).json({ success: false, message: 'Booking not found' });
       }
 
-      if(booking.status === 'returned') {
+      if(status === 'returned') {
         await CarProvider.findByIdAndUpdate(booking.carProvider, {
             $inc: { sale: 1 }
         },
@@ -276,7 +276,7 @@ exports.updateBookingStatus = async (req, res) => {
       const price = booking.carProvider.dailyrate;
       const netAmount = (price * (100 - PLATFORM_FEE) / 100) + 10 ;
 
-      if(booking.status === 'received') {
+      if(status === 'received') {
         await User.findByIdAndUpdate(booking.carProvider.renter, {
             $inc: { coin: netAmount }
         }) 
